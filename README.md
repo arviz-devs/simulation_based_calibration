@@ -87,7 +87,7 @@ for idx in range(num_trials):
 - **No observations!** Simulation based calibration is a way to calibrate your observations independent of observed data, and the observations are not needed or used by this library.
 - **Pass `shape` to your observed variables** When defining your PyMC3 model, the shape of observed variables is usually inferred from the observations. We can not do that here (see **No observations** above), so need a hint.
 - **The progressbar is extra informative** Notice that it collects all the warnings from each PyMC3 sampling run and aggregates it for you. If you are getting tons of divergences, maybe you do not need simulation based calibration to know your model has some problems?
-- **This takes a long time** It is embarassingly parallel, but this implementation will not help you with that.
+- **This takes a long time** It is embarrassingly parallel, but this implementation will not help you with that.
 - **Other rank statistics** You can add a `pm.Deterministic` variable to your model to compute other rank statistics.
 
 ## Examples from the paper
