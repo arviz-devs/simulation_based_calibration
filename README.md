@@ -37,7 +37,7 @@ pip install git+https://github.com/ColCarroll/simulation_based_calibration
 2. Run simulations
     ```python
     sbc = SBC(centered_eight_model, 'y',
-            num_trials=1000,
+            num_simulations=1000,
             sample_kwargs={'draws': 25, 'tune': 50})
 
     sbc.run_simulations()
