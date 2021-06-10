@@ -69,7 +69,7 @@ def my_model(y=None):
 Then what this library does is compute
 
 ```python
-with model():
+with my_model():
     prior_samples = pm.sample_prior_predictive(num_trials)
 
 simulations = {'x': []}
