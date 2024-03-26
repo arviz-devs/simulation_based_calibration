@@ -1,1 +1,2 @@
-from .simulation_based_calibration import SBC, plot_sbc
+from .sbc import SBC
+from .plots import plot_results
