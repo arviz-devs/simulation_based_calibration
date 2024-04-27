@@ -1,6 +1,6 @@
 # Simulation Based Calibration
 
-A [PyMC3](http://docs.pymc.io) implementation of the algorithms from:
+A [PyMC](http://docs.pymc.io) and [Bambi](https://bambinos.github.io/bambi/) implementation of the algorithms from:
 
 Sean Talts, Michael Betancourt, Daniel Simpson, Aki Vehtari, Andrew Gelman: “Validating Bayesian Inference Algorithms with Simulation-Based Calibration”, 2018; [arXiv:1804.06788](http://arxiv.org/abs/1804.06788)
 
