@@ -53,8 +53,7 @@ def plot_results(simulations, kind="ecdf", var_names=None, figsize=None, color="
         if figsize is None:
             figsize=(8, n_plots*0.75)
 
-
-        fig, axes = plt.subplots(nrows=n_plots//2, ncols=2, figsize=figsize, sharex=True)
+        fig, axes = plt.subplots(nrows=(n_plots + 1) // 2, ncols=2, figsize=figsize, sharex=True)
         axes = axes.flatten()
     else:
         if figsize is None:
@@ -95,7 +94,10 @@ def plot_results(simulations, kind="ecdf", var_names=None, figsize=None, color="
             ax.set_title(dim_label)
             ax.set_yticks([])
             idx += 1
-            
+
+    for j in range(n_plots, len(axes)):
+        fig.delaxes(axes[j])
+
     return fig, axes
 
 def hist(ary, color, ax):
