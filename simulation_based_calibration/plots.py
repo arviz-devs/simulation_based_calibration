@@ -7,11 +7,11 @@ import matplotlib.pyplot as plt
 from scipy.special import bdtrik
 
 
-def plot_results(simulations, kind="ecdf", var_names=None, color="C0"):
+def plot_results(simulations, kind="ecdf", var_names=None, figsize=None, color="C0"):
     """Visual diagnostic for SBC.
 
     Currently it support two options: `ecdf` for the empirical CDF plots
-    for the difference between prior and posterior. `hist` for the rank
+    of the difference between prior and posterior. `hist` for the rank
     histogram.
 
 
@@ -23,8 +23,10 @@ def plot_results(simulations, kind="ecdf", var_names=None, color="C0"):
         What kind of plot to make. Supported values are 'ecdf' and 'hist'
     var_names : list[str]
         Variables to plot (defaults to all)
+    figsize : tuple
+        Figure size for the plot. If None, it will be defined automatically.
     color : str
-        Color to use for the ECDF plot
+        Color to use for the eCDF or histogram
 
     Returns
     -------
@@ -47,7 +49,18 @@ def plot_results(simulations, kind="ecdf", var_names=None, color="C0"):
 
     n_plots = sum(np.prod(v.shape[1:]) for v in sims.values())
 
-    fig, axes = plt.subplots(nrows=n_plots, figsize=(12, 4 * n_plots))
+    if n_plots > 1:
+        if figsize is None:
+            figsize=(8, n_plots*0.75)
+
+        fig, axes = plt.subplots(nrows=(n_plots + 1) // 2, ncols=2, figsize=figsize, sharex=True)
+        axes = axes.flatten()
+    else:
+        if figsize is None:
+            figsize=(8, 1.5)
+
+        fig, axes = plt.subplots(nrows=1, ncols=1, figsize=figsize)
+        axes = [axes]
 
     if kind == "ecdf":
         cdf = UniformCDF(len(simulations[var_names[0]]))
@@ -81,6 +94,10 @@ def plot_results(simulations, kind="ecdf", var_names=None, color="C0"):
             ax.set_title(dim_label)
             ax.set_yticks([])
             idx += 1
+
+    for j in range(n_plots, len(axes)):
+        fig.delaxes(axes[j])
+
     return fig, axes
 
 def hist(ary, color, ax):
