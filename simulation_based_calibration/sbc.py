@@ -43,40 +43,21 @@ class SBC:
     def __init__(
         self,
         model,
-        observed_vars,
+        observed_vars=None,
         num_simulations=1000,
         sample_kwargs=None,
         seed=None,
     ):
         """Set up class for doing SBC.
 
-        Note that you must define your model using a function so the observations
-        can change on each run, and the keyword arguments of the function must
-        match the observed variables.
-
-        You should also specify the shape of the actual observations! See the example.
-
-        Example
-        -------
-        def my_model(y=None):
-            with pm.Model() as model:
-                x = pm.Normal('x')
-                obs_y = pm.Normal('y', mu=2 * x, observed=y, shape=2)
-            return model
-
-        sbc = SBC(my_model, 'y', num_simulations=1000)
-        sbc.run_simulations()
-        sbc.plot_sbc()
-
         Parameters
         ----------
         model : function
-            A PyMC or Bambi model. If a PyMC model the data needs to be defined as 
+            A PyMC or Bambi model. If a PyMC model the data needs to be defined as
             mutable data.
-        observed_vars : dict
-            This is very annoying. A dictionary of the name of the observed variable and 
-            the name of the "data". The "data" is the mutable data variable (if PyMC) or
-            the column name in the dataframe if Bambi.
+        observed_vars : 2-tuple of str
+            Only required for PyMC. Ignored for Bambi. Name of the name of the MutableData
+            name of the observed variable.
         num_simulations : int
             How many simulations to run
         sample_kwargs : dict[str] -> Any
@@ -84,19 +65,35 @@ class SBC:
         seed : int (optional)
             Random seed. This persists even if running the simulations is
             paused for whatever reason.
+
+        Example
+        -------
+
+        with pm.Model() as model:
+            obs = pm.MutableData('obs', data)
+            x = pm.Normal('x')
+            y = pm.Normal('y', mu=2 * x, observed=obs)
+        return model
+
+        sbc = SBC(my_model, ("obs", "y"), num_simulations=1000)
+        sbc.run_simulations()
+        sbc.plot_results()
         """
         if isinstance(model, pm.Model):
             self.engine = "pymc"
             self.model = model
+            self.observed_vars = dict(observed_vars)
         else:
             self.engine = "bambi"
             model.build()
             self.model = model.backend.model
             self.formula = model.formula
             self.new_data = copy(model.data)
+            self.observed_vars = {
+                model.response_component.term.name: model.response_component.term.name
+            }
             self.priors = None
 
-        self.observed_vars = observed_vars
         self.num_simulations = num_simulations
 
         self.var_names = [v.name for v in self.model.free_RVs]
@@ -115,7 +112,7 @@ class SBC:
         """Set the random seed, and generate seeds for all the simulations."""
         if self._seed is not None:
             np.random.seed(self._seed)
-        return np.random.randint(2 ** 30, size=self.num_simulations)
+        return np.random.randint(2**30, size=self.num_simulations)
 
     def _get_prior_predictive_samples(self):
         """Generate samples to use for the simulations."""
@@ -124,7 +121,7 @@ class SBC:
             prior_pred = az.extract(idata, group="prior_predictive")
             prior = az.extract(idata, group="prior")
         return prior, prior_pred
-    
+
     def _get_posterior_samples(self, prior_predictive_draw):
         """Generate posterior samples conditioned to a prior predictive sample."""
         if self.engine == "pymc":
@@ -134,10 +131,9 @@ class SBC:
         else:
             for k, v in prior_predictive_draw.items():
                 self.new_data[k] = v
-            check = bmb.Model(self.formula, 
-                              self.new_data, 
-                              priors=self.priors,
-                              ).fit(**self.sample_kwargs)
+            check = bmb.Model(self.formula, self.new_data, priors=self.priors).fit(
+                **self.sample_kwargs
+            )
 
         posterior = az.extract(check, group="posterior")
         return posterior
@@ -161,9 +157,12 @@ class SBC:
         try:
             while self._simulations_complete < self.num_simulations:
                 idx = self._simulations_complete
-                prior_predictive_draw = {k:prior_pred[v].sel(chain=0, draw=idx).values for k, v in self.observed_vars.items()}
+                prior_predictive_draw = {
+                    k: prior_pred[v].sel(chain=0, draw=idx).values
+                    for k, v in self.observed_vars.items()
+                }
                 np.random.seed(seeds[idx])
-                
+
                 posterior = self._get_posterior_samples(prior_predictive_draw)
                 for name in self.var_names:
                     self.simulations[name].append(
@@ -176,7 +175,6 @@ class SBC:
                 k: v[: self._simulations_complete] for k, v in self.simulations.items()
             }
             progress.close()
-
 
     def plot_results(self, kind="ecdf", var_names=None, color="C0"):
         """Produce plots similar to those in the SBC paper."""
