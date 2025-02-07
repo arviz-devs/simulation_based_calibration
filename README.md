@@ -12,7 +12,7 @@ Many thanks to the authors for providing open, reproducible code and implementat
 May be pip installed from github:
 
 ```bash
-pip install git+https://github.com/ColCarroll/simulation_based_calibration
+pip install git+https://github.com/arviz-devs/simulation_based_calibration
 ```
 
 ## Quickstart
