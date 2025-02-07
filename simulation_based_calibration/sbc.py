@@ -129,8 +129,7 @@ class SBC:
         else:
             for k, v in prior_predictive_draw.items():
                 self.new_data[k] = v
-            model = bmb.Model(self.formula, self.new_data, priors=self.priors)
-            check = model.fit(**self.sample_kwargs)
+            check = bmb.Model(self.formula, self.new_data, priors=self.priors).fit(**self.sample_kwargs)
         
         posterior = az.extract(check, group="posterior")
         return posterior
