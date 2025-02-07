@@ -20,7 +20,7 @@ def plot_results(simulations, kind="ecdf", var_names=None, figsize=None, color="
     simulations : dict[str] -> listlike
         The SBC.simulations dictionary.
     kind : str
-        What kind of plot to make. Supported values are 'ecdf' and 'hist'
+        What kind of plot to make. Supported values are 'ecdf' (default) and 'hist'
     var_names : list[str]
         Variables to plot (defaults to all)
     figsize : tuple
@@ -85,7 +85,7 @@ def plot_results(simulations, kind="ecdf", var_names=None, figsize=None, color="
                             cdf=cdf,
                             difference = True, 
                             pit = True,
-                            confidence_bands = True,
+                            confidence_bands = "auto",
                             plot_kwargs={"color":color},
                             fill_kwargs={"color":color},
                             ax=ax)
