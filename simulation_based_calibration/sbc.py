@@ -66,9 +66,8 @@ class SBC:
             obs = pm.MutableData('obs', data)
             x = pm.Normal('x')
             y = pm.Normal('y', mu=2 * x, observed=obs)
-        return model
 
-        sbc = SBC(my_model, ("obs", "y"), num_simulations=1000)
+        sbc = SBC(model)
         sbc.run_simulations()
         sbc.plot_results()
         """
