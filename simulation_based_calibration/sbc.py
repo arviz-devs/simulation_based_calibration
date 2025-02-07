@@ -17,10 +17,7 @@ from plots import plot_results
 
 
 class quiet_logging:
-    """Turn off logging for certain libraries.
-
-    PyMC and PyTensor compile locks are a little noisy when running a bunch of loops.
-    """
+    """Turn off logging for PyMC, Bambi and PyTensor."""
 
     def __init__(self, *libraries):
         self.loggers = [logging.getLogger(library) for library in libraries]
@@ -43,7 +40,6 @@ class SBC:
     def __init__(
         self,
         model,
-        observed_vars=None,
         num_simulations=1000,
         sample_kwargs=None,
         seed=None,
@@ -55,13 +51,10 @@ class SBC:
         model : function
             A PyMC or Bambi model. If a PyMC model the data needs to be defined as
             mutable data.
-        observed_vars : 2-tuple of str
-            Only required for PyMC. Ignored for Bambi. Name of the name of the MutableData
-            name of the observed variable.
         num_simulations : int
             How many simulations to run
         sample_kwargs : dict[str] -> Any
-            Arguments passed to pymc.sample
+            Arguments passed to pymc.sample or bambi.Model.fit
         seed : int (optional)
             Random seed. This persists even if running the simulations is
             paused for whatever reason.
@@ -82,17 +75,17 @@ class SBC:
         if isinstance(model, pm.Model):
             self.engine = "pymc"
             self.model = model
-            self.observed_vars = dict(observed_vars)
+            self.observed_vars = {model.rvs_to_values[rv].name : rv.name for rv in model.observed_RVs}
         else:
             self.engine = "bambi"
             model.build()
+            self.bambi_model = model
             self.model = model.backend.model
             self.formula = model.formula
             self.new_data = copy(model.data)
             self.observed_vars = {
                 model.response_component.term.name: model.response_component.term.name
             }
-            self.priors = None
 
         self.num_simulations = num_simulations
 
@@ -131,9 +124,7 @@ class SBC:
         else:
             for k, v in prior_predictive_draw.items():
                 self.new_data[k] = v
-            check = bmb.Model(self.formula, self.new_data, priors=self.priors).fit(
-                **self.sample_kwargs
-            )
+            check = bmb.Model(self.formula, self.new_data).fit(**self.sample_kwargs).fit()
 
         posterior = az.extract(check, group="posterior")
         return posterior
@@ -177,5 +168,29 @@ class SBC:
             progress.close()
 
     def plot_results(self, kind="ecdf", var_names=None, color="C0"):
-        """Produce plots similar to those in the SBC paper."""
+        """Visual diagnostic for SBC.
+
+        Currently it support two options: `ecdf` for the empirical CDF plots
+        of the difference between prior and posterior. `hist` for the rank
+        histogram.
+
+
+        Parameters
+        ----------
+        simulations : dict[str] -> listlike
+            The SBC.simulations dictionary.
+        kind : str
+            What kind of plot to make. Supported values are 'ecdf' (default) and 'hist'
+        var_names : list[str]
+            Variables to plot (defaults to all)
+        figsize : tuple
+            Figure size for the plot. If None, it will be defined automatically.
+        color : str
+            Color to use for the eCDF or histogram
+
+        Returns
+        -------
+        fig, axes
+            matplotlib figure and axes
+        """
         return plot_results(self.simulations, kind=kind, var_names=var_names, color=color)
