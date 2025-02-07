@@ -17,7 +17,7 @@ pip install git+https://github.com/ColCarroll/simulation_based_calibration
 
 ## Quickstart
 
-1. Define a function returning a PyMC model. The arguments must be the same as the observed variables.
+1. Define a PyMC or Bambi model. For example, the centered eight schools model:
 
     ```python
     import numpy as np
@@ -33,19 +33,19 @@ pip install git+https://github.com/ColCarroll/simulation_based_calibration
         theta = pm.Normal('theta', mu=mu, sigma=tau, shape=8)
         y_obs = pm.Normal('y', mu=theta, sigma=sigma, observed=obs)
     ```
-2. Run simulations
+2. Pass the model to the `SBC` class, and run the simulations. This will take a while, as it is running the model many times.
     ```python
-    sbc = SBC(centered_eight,  {'obs':'y'},
+    sbc = SBC(centered_eight,
             num_simulations=100, # ideally this should be higher, like 1000
             sample_kwargs={'draws': 25, 'tune': 50})
 
     sbc.run_simulations()
     ```
-    ```pythontb
+    ```python
     79%|███████▉  | 79/100 [05:36<01:29,  4.27s/it]
     ```
 
-3. Plot the empirical CDF plots for the difference between prior and posterior. The lines
+3. Plot the empirical CDF for the difference between prior and posterior. The lines
 should be close to uniform and within the oval envelope.
 
     ```python
@@ -62,11 +62,9 @@ The [paper on the arXiv](http://arxiv.org/abs/1804.06788) is very well written, 
 Morally, the example below is exactly what this library does, but it generalizes to more complicated models:
 
 ```python
-def my_model(y=None):
-    with pm.Model() as model:
-        x = pm.Normal('x')
-        pm.Normal('y', mu=x, observed=y)
-    return model
+with pm.Model() as model:
+    x = pm.Normal('x')
+    pm.Normal('y', mu=x, observed=y)
 ```
 
 Then what this library does is compute
@@ -80,6 +78,6 @@ for idx in range(num_trials):
     y_tilde = prior_samples['y'][idx]
     x_tilde = prior_samples['x'][idx]
     with model(y=y_tilde):
-        trace = pm.sample()
-    simulations['x'].append((trace['x'] < x_tilde).sum())
+        idata = pm.sample()
+    simulations['x'].append((idata.posterior['x'] < x_tilde).sum())
 ```
