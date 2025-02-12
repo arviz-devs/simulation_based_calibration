@@ -13,6 +13,7 @@
 * Update README.md by [@ColCarroll](https://github.com/ColCarroll) in [#18](https://github.com/arviz-devs/simuk/pull/18)
 * setup package conf by [@aloctavodia](https://github.com/aloctavodia) in [#20](https://github.com/arviz-devs/simuk/pull/20)
 * add templates and workflows by [@aloctavodia](https://github.com/aloctavodia) in [#21](https://github.com/arviz-devs/simuk/pull/21)
+* Update workflow by [@aloctavodia](https://github.com/aloctavodia) in [#23](https://github.com/arviz-devs/simuk/pull/23)
 
 **Full Changelog**: https://github.com/arviz-devs/simuk/commits/0.1.0
 
