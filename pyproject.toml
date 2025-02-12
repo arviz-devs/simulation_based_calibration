@@ -22,7 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dynamic = ["version"]
-description = "Exploring and eliciting probability distributions."
+description = "Simulation based calibration and generation of synthetic data."
 dependencies = [
   "pymc>=5.20",
   "bambi>=0.15.0",
