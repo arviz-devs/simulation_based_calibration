@@ -5,6 +5,8 @@ repos:
     rev: 22.3.0
     hooks:
       - id: black
+        language_version: python3  
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.6.8
     hooks:
@@ -16,3 +18,25 @@ repos:
     rev: 0.3.0
     hooks:
       - id: no-print-statements
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-added-large-files  
+        args: [--maxkb=512]
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.7  
+    hooks:
+      - id: bandit
+        args: [--configfile, .bandit.yml]
+
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: [--baseline, .secrets-baseline]
