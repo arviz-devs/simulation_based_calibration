@@ -1,0 +1,9 @@
+name: simuk
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python >= 3.11
+  - pymc>=5.20.1
+  - bambi>=0.15.0
+  - arviz>=0.20.0
