@@ -1,6 +1,7 @@
 """Simulation based calibration (Talts et. al. 2018) in PyMC."""
-from copy import copy
+
 import logging
+from copy import copy
 
 import arviz as az
 import numpy as np
@@ -11,9 +12,8 @@ try:
 except ImportError:
     pass
 
-from tqdm import tqdm
-
 from plots import plot_results
+from tqdm import tqdm
 
 
 class quiet_logging:
@@ -74,7 +74,9 @@ class SBC:
         if isinstance(model, pm.Model):
             self.engine = "pymc"
             self.model = model
-            self.observed_vars = {model.rvs_to_values[rv].name : rv.name for rv in model.observed_RVs}
+            self.observed_vars = {
+                model.rvs_to_values[rv].name: rv.name for rv in model.observed_RVs
+            }
         else:
             self.engine = "bambi"
             model.build()

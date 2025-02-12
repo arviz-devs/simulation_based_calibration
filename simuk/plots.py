@@ -1,9 +1,10 @@
-"""Plots for the simulation based calibration"""
+"""Plots for the simulation based calibration."""
+
 import itertools
 
 import arviz as az
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from scipy.special import bdtrik
 
 
@@ -33,7 +34,6 @@ def plot_results(simulations, kind="ecdf", var_names=None, figsize=None, color="
     fig, axes
         matplotlib figure and axes
     """
-
     if kind not in ["ecdf", "hist"]:
         raise ValueError(f"kind must be 'ecdf' or 'hist', not {kind}")
 
@@ -51,13 +51,13 @@ def plot_results(simulations, kind="ecdf", var_names=None, figsize=None, color="
 
     if n_plots > 1:
         if figsize is None:
-            figsize=(8, n_plots*0.75)
+            figsize = (8, n_plots * 0.75)
 
         fig, axes = plt.subplots(nrows=(n_plots + 1) // 2, ncols=2, figsize=figsize, sharex=True)
         axes = axes.flatten()
     else:
         if figsize is None:
-            figsize=(8, 1.5)
+            figsize = (8, 1.5)
 
         fig, axes = plt.subplots(nrows=1, ncols=1, figsize=figsize)
         axes = [axes]
@@ -81,14 +81,16 @@ def plot_results(simulations, kind="ecdf", var_names=None, figsize=None, color="
             ax = axes[idx]
             ary = var_data[(...,) + indices]
             if kind == "ecdf":
-                az.plot_ecdf(ary,
-                            cdf=cdf,
-                            difference = True, 
-                            pit = True,
-                            confidence_bands = "auto",
-                            plot_kwargs={"color":color},
-                            fill_kwargs={"color":color},
-                            ax=ax)
+                az.plot_ecdf(
+                    ary,
+                    cdf=cdf,
+                    difference=True,
+                    pit=True,
+                    confidence_bands="auto",
+                    plot_kwargs={"color": color},
+                    fill_kwargs={"color": color},
+                    ax=ax,
+                )
             else:
                 hist(ary, color=color, ax=ax)
             ax.set_title(dim_label)
@@ -100,22 +102,23 @@ def plot_results(simulations, kind="ecdf", var_names=None, figsize=None, color="
 
     return fig, axes
 
+
 def hist(ary, color, ax):
     hist, bins = np.histogram(ary, bins="auto")
     bin_centers = 0.5 * (bins[:-1] + bins[1:])
     max_rank = np.ceil(bins[-1])
     len_bins = len(bins)
     n_sims = len(ary)
-    
-    band = np.ceil(bdtrik([0.025, 0.5, 0.975], n_sims, 1/len_bins))
-    ax.bar(bin_centers, hist, width=bins[1] - bins[0], color=color, edgecolor='black')
+
+    band = np.ceil(bdtrik([0.025, 0.5, 0.975], n_sims, 1 / len_bins))
+    ax.bar(bin_centers, hist, width=bins[1] - bins[0], color=color, edgecolor="black")
     ax.axhline(band[1], color="0.5", ls="--")
     ax.fill_between(np.linspace(0, max_rank, len_bins), band[0], band[2], color="0.5", alpha=0.5)
 
 
-class UniformCDF():
+class UniformCDF:
     def __init__(self, upper_bound):
         self.upper_bound = upper_bound
 
     def __call__(self, x):
-        return np.where(x < 0, 0, np.where(x > self.upper_bound, 1, x / self.upper_bound)) 
+        return np.where(x < 0, 0, np.where(x > self.upper_bound, 1, x / self.upper_bound))
