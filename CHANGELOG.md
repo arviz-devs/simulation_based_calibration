@@ -14,7 +14,6 @@
 * setup package conf by [@aloctavodia](https://github.com/aloctavodia) in [#20](https://github.com/arviz-devs/simuk/pull/20)
 * add templates and workflows by [@aloctavodia](https://github.com/aloctavodia) in [#21](https://github.com/arviz-devs/simuk/pull/21)
 
-
 **Full Changelog**: https://github.com/arviz-devs/simuk/commits/0.1.0
 
 [Changes][0.1.0]
