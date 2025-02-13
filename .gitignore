@@ -39,20 +39,6 @@ nosetests.xml
 coverage.xml
 *.cover
 
-# Pyre type checker
-.pyre/
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Bandit
-.bandit/
-
-# Secrets
-.secrets-baseline
-
 # IDE specific files
 .idea/
 .vscode/
