@@ -6,14 +6,9 @@ from copy import copy
 import arviz as az
 import numpy as np
 import pymc as pm
-
-try:
-    import bambi as bmb
-except ImportError:
-    pass
-
-from plots import plot_results
 from tqdm import tqdm
+
+from simuk.plots import plot_results
 
 
 class quiet_logging:
@@ -74,9 +69,6 @@ class SBC:
         if isinstance(model, pm.Model):
             self.engine = "pymc"
             self.model = model
-            self.observed_vars = {
-                model.rvs_to_values[rv].name: rv.name for rv in model.observed_RVs
-            }
         else:
             self.engine = "bambi"
             model.build()
@@ -84,10 +76,8 @@ class SBC:
             self.model = model.backend.model
             self.formula = model.formula
             self.new_data = copy(model.data)
-            self.observed_vars = {
-                model.response_component.term.name: model.response_component.term.name
-            }
 
+        self.observed_var = self.model.observed_RVs[0].name
         self.num_simulations = num_simulations
 
         self.var_names = [v.name for v in self.model.free_RVs]
@@ -118,14 +108,9 @@ class SBC:
 
     def _get_posterior_samples(self, prior_predictive_draw):
         """Generate posterior samples conditioned to a prior predictive sample."""
-        if self.engine == "pymc":
-            with self.model:
-                pm.set_data(prior_predictive_draw)
-                check = pm.sample(**self.sample_kwargs)
-        else:
-            for k, v in prior_predictive_draw.items():
-                self.new_data[k] = v
-            check = bmb.Model(self.formula, self.new_data).fit(**self.sample_kwargs)
+        model_do = pm.do(self.model, {self.observed_var: prior_predictive_draw})
+        with model_do:
+            check = pm.sample(**self.sample_kwargs)
 
         posterior = az.extract(check, group="posterior")
         return posterior
@@ -149,10 +134,7 @@ class SBC:
         try:
             while self._simulations_complete < self.num_simulations:
                 idx = self._simulations_complete
-                prior_predictive_draw = {
-                    k: prior_pred[v].sel(chain=0, draw=idx).values
-                    for k, v in self.observed_vars.items()
-                }
+                prior_predictive_draw = prior_pred[self.observed_var].sel(chain=0, draw=idx).values
                 np.random.seed(seeds[idx])
 
                 posterior = self._get_posterior_samples(prior_predictive_draw)
