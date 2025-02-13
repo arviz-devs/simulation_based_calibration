@@ -36,6 +36,7 @@ jobs:
         run: |
           conda install pip
           pip install -r requirements-dev.txt
+          pip install .
           python --version
           conda list
           pip freeze
