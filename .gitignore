@@ -30,6 +30,9 @@ venv.bak/
 # Pytest cache
 .pytest_cache/
 
+# Ruff Cache
+.ruff_cache/
+
 # Coverage reports
 htmlcov/
 .coverage
