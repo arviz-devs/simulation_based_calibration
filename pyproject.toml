@@ -27,6 +27,7 @@ dependencies = [
   "pymc>=5.20",
   "bambi>=0.15.0",
   "arviz>=0.20.0",
+  "tqdm"
 ]
 
 [tool.flit.module]
