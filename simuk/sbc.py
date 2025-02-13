@@ -12,8 +12,9 @@ try:
 except ImportError:
     pass
 
-from plots import plot_results
 from tqdm import tqdm
+
+from simuk.plots import plot_results
 
 
 class quiet_logging:
