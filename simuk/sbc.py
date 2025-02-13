@@ -58,7 +58,6 @@ class SBC:
         -------
 
         with pm.Model() as model:
-            obs = pm.MutableData('obs', data)
             x = pm.Normal('x')
             y = pm.Normal('y', mu=2 * x, observed=obs)
 
