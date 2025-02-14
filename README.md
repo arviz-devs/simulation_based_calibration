@@ -12,7 +12,7 @@ Many thanks to the authors for providing open, reproducible code and implementat
 May be pip installed from github:
 
 ```bash
-pip install git+https://github.com/arviz-devs/simulation_based_calibration
+pip install simuk
 ```
 
 ## Quickstart
@@ -25,13 +25,12 @@ pip install git+https://github.com/arviz-devs/simulation_based_calibration
 
     data = np.array([28.0, 8.0, -3.0, 7.0, -1.0, 1.0, 18.0, 12.0])
     sigma = np.array([15.0, 10.0, 16.0, 11.0, 9.0, 11.0, 10.0, 18.0])
-                    
+
     with pm.Model() as centered_eight:
-        obs = pm.MutableData("obs", data)
         mu = pm.Normal('mu', mu=0, sigma=5)
         tau = pm.HalfCauchy('tau', beta=5)
         theta = pm.Normal('theta', mu=mu, sigma=tau, shape=8)
-        y_obs = pm.Normal('y', mu=theta, sigma=sigma, observed=obs)
+        y_obs = pm.Normal('y', mu=theta, sigma=sigma, observed=data)
     ```
 2. Pass the model to the `SBC` class, and run the simulations. This will take a while, as it is running the model many times.
     ```python
