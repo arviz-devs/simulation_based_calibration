@@ -76,7 +76,7 @@ class SBC:
             self.formula = model.formula
             self.new_data = copy(model.data)
 
-        self.observed_var = self.model.observed_RVs[0].name
+        self.observed_vars = [obs_rvs.name for obs_rvs in self.model.observed_RVs]
         self.num_simulations = num_simulations
 
         self.var_names = [v.name for v in self.model.free_RVs]
@@ -107,8 +107,8 @@ class SBC:
 
     def _get_posterior_samples(self, prior_predictive_draw):
         """Generate posterior samples conditioned to a prior predictive sample."""
-        model_do = pm.do(self.model, {self.observed_var: prior_predictive_draw})
-        with model_do:
+        new_model = pm.observe(self.model, prior_predictive_draw)
+        with new_model:
             check = pm.sample(**self.sample_kwargs)
 
         posterior = az.extract(check, group="posterior")
@@ -133,7 +133,11 @@ class SBC:
         try:
             while self._simulations_complete < self.num_simulations:
                 idx = self._simulations_complete
-                prior_predictive_draw = prior_pred[self.observed_var].sel(chain=0, draw=idx).values
+                prior_predictive_draw = {
+                    var_name: prior_pred[var_name].sel(chain=0, draw=idx).values
+                    for var_name in self.observed_vars
+                }
+
                 np.random.seed(seeds[idx])
 
                 posterior = self._get_posterior_samples(prior_predictive_draw)
