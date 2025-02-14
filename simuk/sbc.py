@@ -76,7 +76,7 @@ class SBC:
             self.formula = model.formula
             self.new_data = copy(model.data)
 
-        self.observed_vars = [obs_rvs.name for obs_rvs in model.observed_RVs]
+        self.observed_vars = [obs_rvs.name for obs_rvs in self.model.observed_RVs]
         self.num_simulations = num_simulations
 
         self.var_names = [v.name for v in self.model.free_RVs]
