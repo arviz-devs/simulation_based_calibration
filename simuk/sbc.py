@@ -38,6 +38,34 @@ class quiet_logging:
 
 
 class SBC:
+    """Set up class for doing SBC.
+
+    Parameters
+    ----------
+    model : function
+        A PyMC or Bambi model. If a PyMC model the data needs to be defined as
+        mutable data.
+    num_simulations : int
+        How many simulations to run
+    sample_kwargs : dict[str] -> Any
+        Arguments passed to pymc.sample or bambi.Model.fit
+    seed : int (optional)
+        Random seed. This persists even if running the simulations is
+        paused for whatever reason.
+
+    Example
+    -------
+
+    with pm.Model() as model:
+        obs = pm.MutableData('obs', data)
+        x = pm.Normal('x')
+        y = pm.Normal('y', mu=2 * x, observed=obs)
+
+    sbc = SBC(model)
+    sbc.run_simulations()
+    sbc.plot_results()
+    """
+
     def __init__(
         self,
         model,
@@ -45,33 +73,6 @@ class SBC:
         sample_kwargs=None,
         seed=None,
     ):
-        """Set up class for doing SBC.
-
-        Parameters
-        ----------
-        model : function
-            A PyMC or Bambi model. If a PyMC model the data needs to be defined as
-            mutable data.
-        num_simulations : int
-            How many simulations to run
-        sample_kwargs : dict[str] -> Any
-            Arguments passed to pymc.sample or bambi.Model.fit
-        seed : int (optional)
-            Random seed. This persists even if running the simulations is
-            paused for whatever reason.
-
-        Example
-        -------
-
-        with pm.Model() as model:
-            obs = pm.MutableData('obs', data)
-            x = pm.Normal('x')
-            y = pm.Normal('y', mu=2 * x, observed=obs)
-
-        sbc = SBC(model)
-        sbc.run_simulations()
-        sbc.plot_results()
-        """
         if isinstance(model, pm.Model):
             self.engine = "pymc"
             self.model = model
