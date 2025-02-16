@@ -56,14 +56,17 @@ class SBC:
     Example
     -------
 
-    with pm.Model() as model:
-        obs = pm.MutableData('obs', data)
-        x = pm.Normal('x')
-        y = pm.Normal('y', mu=2 * x, observed=obs)
+    .. code-block :: python
 
-    sbc = SBC(model)
-    sbc.run_simulations()
-    sbc.plot_results()
+        with pm.Model() as model:
+            obs = pm.MutableData('obs', data)
+            x = pm.Normal('x')
+            y = pm.Normal('y', mu=2 * x, observed=obs)
+
+        sbc = SBC(model)
+        sbc.run_simulations()
+        sbc.plot_results()
+
     """
 
     def __init__(

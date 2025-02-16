@@ -4,4 +4,5 @@ sphinx>=4
 sphinx-copybutton
 sphinx_tabs
 sphinx-design
+numpydoc
 jupyter-sphinx

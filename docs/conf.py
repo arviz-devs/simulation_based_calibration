@@ -31,6 +31,7 @@ extensions = [
     "matplotlib.sphinxext.plot_directive",
     "sphinx_tabs.tabs",
     "sphinx_design",
+    "numpydoc",
     "jupyter_sphinx",
 ]
 
@@ -41,22 +42,21 @@ nb_kernel_rgx_aliases = {".*": "python3"}
 myst_enable_extensions = ["colon_fence", "deflist", "dollarmath"]
 autosummary_generate = True
 autodoc_member_order = "bysource"
-autodoc_default_flags = ["members"]
-
-# autodoc_default_options = {
-#     "inherited-members": True,
-# }
+numpydoc_show_class_members = False
+numpydoc_show_inherited_class_members = False
+numpydoc_class_members_toctree = False
 
 source_suffix = ".rst"
 
 master_doc = "index"
 language = "en"
+templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints"]
 pygments_style = "sphinx"
-html_static_path = ["_static", "logos", "audios"]
 html_css_files = ["custom.css"]
+html_title = "Simuk"
+html_short_title = "Simuk"
 html_theme = "pydata_sphinx_theme"
-html_favicon = "logos/favicon.ico"
 
 html_theme_options = {
     "collapse_navigation": True,
@@ -90,21 +90,6 @@ htmlhelp_basename = "simukdoc"
 
 
 # -- Options for LaTeX output ------------------------------------------------
-
-latex_elements = {
-    # The paper size ('letterpaper' or 'a4paper').
-    #
-    # 'papersize': 'letterpaper',
-    # The font size ('10pt', '11pt' or '12pt').
-    #
-    # 'pointsize': '10pt',
-    # Additional stuff for the LaTeX preamble.
-    #
-    # 'preamble': '',
-    # Latex figure (float) alignment
-    #
-    # 'figure_align': 'htbp',
-}
 
 latex_documents = [
     (master_doc, "simuk.tex", "simuk Documentation", "The developers of simuk", "manual"),
