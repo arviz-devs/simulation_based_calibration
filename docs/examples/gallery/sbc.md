@@ -51,7 +51,7 @@ sbc = simuk.SBC(centered_eight,
     num_simulations=100,
     sample_kwargs={'draws': 25, 'tune': 50})
 
-# sbc.run_simulations()
+sbc.run_simulations()
 ```
 
 To compare the prior and posterior distributions, we will plot the results. You can adjust the type of visualization 
@@ -89,8 +89,7 @@ sbc = simuk.SBC(bmb_model,
     num_simulations=100,
     sample_kwargs={'draws': 25, 'tune': 50})
 
-# sbc.run_simulations()
-
+sbc.run_simulations()
 ```
 
 To compare the prior and posterior distributions, we will plot the results. You can customize the visualization type 
