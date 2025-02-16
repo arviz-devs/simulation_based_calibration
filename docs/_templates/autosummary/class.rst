@@ -6,7 +6,6 @@
 
     .. rubric:: Methods
 
-    .. autosummary::
-    {% for item in methods %}
-        ~{{ objname }}.{{ item }}
+    {% for item in methods if item != "__init__" %}
+    .. automethod:: {{ objname }}.{{ item }}
     {%- endfor %}
