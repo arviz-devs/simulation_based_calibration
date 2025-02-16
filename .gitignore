@@ -53,3 +53,9 @@ coverage.xml
 # Operating system files
 .DS_Store
 Thumbs.db
+
+# Sphinx documentation
+docs/_build/
+_build
+jupyter_execute
+docs/api/generated
